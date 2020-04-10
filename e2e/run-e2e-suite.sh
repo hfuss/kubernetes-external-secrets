@@ -67,6 +67,8 @@ trap cleanup EXIT
 kubectl apply -f ${DIR}/localstack.deployment.yaml
 
 helm template e2e $DIR/../charts/kubernetes-external-secrets \
+  --include-crds \
+  --set customResourceManagerDisabled=true \
   --set image.repository=external-secrets \
   --set image.tag=test \
   --set env.LOG_LEVEL=debug \
@@ -93,8 +95,52 @@ until kubectl get secret | grep -q ^external-secrets-e2e-token; do \
   sleep 3; \
 done
 
-echo -e "${BGREEN}Starting external-secrets e2e tests...${NC}"
+echo -e "${BGREEN}Starting external-secrets e2e tests with the custom resource manager disabled...${NC}"
+kubectl rollout status deploy/localstack
+kubectl rollout status deploy/e2e-kubernetes-external-secrets
 
+kubectl run \
+  --attach \
+  --restart=Never \
+  --env="LOCALSTACK=true" \
+  --env="LOCALSTACK_SSM_URL=http://ssm" \
+  --env="LOCALSTACK_SM_URL=http://secretsmanager" \
+  --env="AWS_ACCESS_KEY_ID=foobar" \
+  --env="AWS_SECRET_ACCESS_KEY=foobar" \
+  --env="AWS_DEFAULT_REGION=us-east-1" \
+  --env="AWS_REGION=us-east-1" \
+  --env="LOCALSTACK_STS_URL=http://sts" \
+  --env="DISABLE_CUSTOM_RESOURCE_MANAGER=true" \
+  --generator=run-pod/v1 \
+  --overrides='{ "apiVersion": "v1", "spec":{"serviceAccountName": "external-secrets-e2e"}}' \
+  e2e --image=external-secrets-e2e:test
+
+echo "Preparing for second round of e2e tests..."
+
+kubectl delete pod e2e 2>/dev/null
+kubectl delete externalsecret --all 2>/dev/null
+kubectl delete deploy/e2e-kubernetes-external-secrets 2>/dev/null
+kubectl delete deploy/localstack 2>/dev/null
+kubectl delete crd/externalsecrets.kubernetes-client.io 2>/dev/null
+
+kubectl apply -f ${DIR}/localstack.deployment.yaml
+
+helm template e2e $DIR/../charts/kubernetes-external-secrets \
+  --skip-crds \
+  --set image.repository=external-secrets \
+  --set image.tag=test \
+  --set env.LOG_LEVEL=debug \
+  --set env.LOCALSTACK=true \
+  --set env.LOCALSTACK_SSM_URL=http://ssm \
+  --set env.LOCALSTACK_SM_URL=http://secretsmanager \
+  --set env.AWS_ACCESS_KEY_ID=foobar \
+  --set env.AWS_SECRET_ACCESS_KEY=foobar \
+  --set env.AWS_DEFAULT_REGION=us-east-1 \
+  --set env.AWS_REGION=us-east-1 \
+  --set env.POLLER_INTERVAL_MILLISECONDS=1000 \
+  --set env.LOCALSTACK_STS_URL=http://sts | kubectl apply -f -
+
+echo -e "${BGREEN}Starting external-secrets e2e tests with the custom resource manager enabled...${NC}"
 kubectl rollout status deploy/localstack
 kubectl rollout status deploy/e2e-kubernetes-external-secrets
 
