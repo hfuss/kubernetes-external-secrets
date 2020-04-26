@@ -79,7 +79,7 @@ if [[ "$HELM_VERSION" == "V3" ]]; then
     E2E_EXTRA_ARGS=''
   fi
 else
-  HELM_TEMPLATE_ARGS="'$(dirname "$DIR")/charts/kubernetes-external-secrets' --name e2e"
+  HELM_TEMPLATE_ARGS="$(dirname "$DIR")/charts/kubernetes-external-secrets --name e2e"
   if [[ "$DISABLE_CUSTOM_RESOURCE_MANAGER" == "true" ]]; then
     HELM_TEMPLATE_EXTRA_ARGS="--set crds.create=true --set customResourceManagerDisabled=true"
     E2E_EXTRA_ARGS='--env="DISABLE_CUSTOM_RESOURCE_MANAGER=true"'
@@ -89,8 +89,8 @@ else
   fi
 fi
 
-helm2 template "${HELM_TEMPLATE_ARGS}" \
-  "${HELM_TEMPLATE_EXTRA_ARGS}" \
+helm2 template ${HELM_TEMPLATE_ARGS} \
+  ${HELM_TEMPLATE_EXTRA_ARGS} \
   --set image.repository=external-secrets \
   --set image.tag=test \
   --set env.LOG_LEVEL=debug \
@@ -132,7 +132,7 @@ kubectl run \
   --env="AWS_DEFAULT_REGION=us-east-1" \
   --env="AWS_REGION=us-east-1" \
   --env="LOCALSTACK_STS_URL=http://sts" \
-  "${E2E_EXTRA_ARGS}" \
+  ${E2E_EXTRA_ARGS} \
   --generator=run-pod/v1 \
   --overrides='{ "apiVersion": "v1", "spec":{"serviceAccountName": "external-secrets-e2e"}}' \
   e2e --image=external-secrets-e2e:test
