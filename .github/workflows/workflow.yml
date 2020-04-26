@@ -19,8 +19,8 @@ jobs:
     name: E2E
     strategy:
       matrix:
-        disableCustomResourceManager: [true, false]
-        helmVersion: [V2, V3]
+        disableCustomResourceManager: ['true', 'false']
+        helmVersion: ['V2', 'V3']
     steps:
       - uses: actions/checkout@v2
       - name: Setup node
@@ -30,7 +30,7 @@ jobs:
       - uses: azure/setup-helm@v1
         with:
           version: 2.16.1
-        if: matrix.helmVersion == "V2"
+        if: matrix.helmVersion == 'V2'
       - run: npm install
       - run: |
           helm version
