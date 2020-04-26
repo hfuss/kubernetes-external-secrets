@@ -74,14 +74,14 @@ HELM_TEMPLATE_EXTRA_ARGS=""
 E2E_EXTRA_ARGS=""
 if [[ "$HELM_VERSION" == "V3" ]]; then
   if [[ "$DISABLE_CUSTOM_RESOURCE_MANAGER" == "true" ]]; then
-    HELM_TEMPLATE_EXTRA_ARGS='--include-crds --set "customResourceManagerDisabled=true"'
+    HELM_TEMPLATE_EXTRA_ARGS="--include-crds --set customResourceManagerDisabled=true"
     E2E_EXTRA_ARGS='--env="DISABLE_CUSTOM_RESOURCE_MANAGER=true"'
   else
-    HELM_TEMPLATE_EXTRA_ARGS='--skip-crds'
+    HELM_TEMPLATE_EXTRA_ARGS="--skip-crds"
   fi
 else
   if [[ "$DISABLE_CUSTOM_RESOURCE_MANAGER" == "true" ]]; then
-    HELM_TEMPLATE_EXTRA_ARGS='--set "crds.create=true" --set "customResourceManagerDisabled=true"'
+    HELM_TEMPLATE_EXTRA_ARGS="--set crds.create=true --set customResourceManagerDisabled=true"
     E2E_EXTRA_ARGS='--env="DISABLE_CUSTOM_RESOURCE_MANAGER=true"'
   fi
 fi
