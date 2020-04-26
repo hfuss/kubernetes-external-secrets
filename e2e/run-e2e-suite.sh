@@ -70,7 +70,7 @@ trap cleanup EXIT
 
 kubectl apply -f ${DIR}/localstack.deployment.yaml
 
-HELM_TEMPLATE_ARGS="e2e '$(dirname "$DIR")/charts/kubernetes-external-secrets'"
+HELM_TEMPLATE_ARGS="e2e $(dirname "$DIR")/charts/kubernetes-external-secrets"
 HELM_TEMPLATE_EXTRA_ARGS="--include-crds --set customResourceManagerDisabled=true"
 E2E_EXTRA_ARGS='--env="DISABLE_CUSTOM_RESOURCE_MANAGER=true"'
 if [[ "$HELM_VERSION" == "V3" ]]; then
