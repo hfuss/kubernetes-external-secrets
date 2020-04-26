@@ -36,4 +36,4 @@ jobs:
           helm init --client-only
         if: matrix.helmVersion == 'V2'
       - run: npm install
-      - run: npm run test-e2e -- ${{ matrix.disableCustomResourceManager }} ${{ matrix.helmVersion }}
+      - run: DEBUG=true npm run test-e2e -- ${{ matrix.disableCustomResourceManager }} ${{ matrix.helmVersion }}
