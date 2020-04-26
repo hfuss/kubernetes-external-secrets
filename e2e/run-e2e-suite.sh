@@ -89,7 +89,7 @@ else
   fi
 fi
 
-helm2 template ${HELM_TEMPLATE_ARGS} \
+helm template ${HELM_TEMPLATE_ARGS} \
   ${HELM_TEMPLATE_EXTRA_ARGS} \
   --set image.repository=external-secrets \
   --set image.tag=test \
