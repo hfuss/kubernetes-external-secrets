@@ -33,5 +33,5 @@ jobs:
         if: matrix.helmVersion == "V2"
       - run: npm install
       - run: |
-        helm version
-        npm run test-e2e -- ${{ matrix.disableCustomResourceManager }} ${{ matrix.helmVersion }}
+          helm version
+          npm run test-e2e -- ${{ matrix.disableCustomResourceManager }} ${{ matrix.helmVersion }}
