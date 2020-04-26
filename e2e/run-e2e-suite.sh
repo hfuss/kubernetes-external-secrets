@@ -86,8 +86,8 @@ else
   fi
 fi
 
-helm template e2e $DIR/../charts/kubernetes-external-secrets \
-  ${HELM_TEMPLATE_EXTRA_ARGS} \
+helm template e2e "$(dirname "$DIR")/charts/kubernetes-external-secrets" \
+  "${HELM_TEMPLATE_EXTRA_ARGS}" \
   --set image.repository=external-secrets \
   --set image.tag=test \
   --set env.LOG_LEVEL=debug \
