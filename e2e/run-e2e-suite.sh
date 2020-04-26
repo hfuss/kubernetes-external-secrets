@@ -70,22 +70,22 @@ trap cleanup EXIT
 
 kubectl apply -f ${DIR}/localstack.deployment.yaml
 
-HELM_TEMPLATE_ARGS="e2e $(dirname "$DIR")/charts/kubernetes-external-secrets"
+CHART_DIR="$(dirname "$DIR")/charts/kubernetes-external-secrets"
+HELM_TEMPLATE_ARGS="e2e ${CHART_DIR}"
 HELM_TEMPLATE_EXTRA_ARGS="--include-crds --set customResourceManagerDisabled=true"
-E2E_EXTRA_ARGS='--env="DISABLE_CUSTOM_RESOURCE_MANAGER=true"'
+E2E_EXTRA_ARGS="--env=DISABLE_CUSTOM_RESOURCE_MANAGER=true"
 if [[ "$HELM_VERSION" == "V3" ]]; then
   if [[ "$DISABLE_CUSTOM_RESOURCE_MANAGER" == "false" ]]; then
     HELM_TEMPLATE_EXTRA_ARGS="--skip-crds"
-    E2E_EXTRA_ARGS=''
+    E2E_EXTRA_ARGS=""
   fi
 else
-  HELM_TEMPLATE_ARGS="$(dirname "$DIR")/charts/kubernetes-external-secrets --name e2e"
+  HELM_TEMPLATE_ARGS="${CHART_DIR} --name e2e"
   if [[ "$DISABLE_CUSTOM_RESOURCE_MANAGER" == "true" ]]; then
     HELM_TEMPLATE_EXTRA_ARGS="--set crds.create=true --set customResourceManagerDisabled=true"
-    E2E_EXTRA_ARGS='--env="DISABLE_CUSTOM_RESOURCE_MANAGER=true"'
   else
-    HELM_TEMPLATE_EXTRA_ARGS=''
-    E2E_EXTRA_ARGS=''
+    HELM_TEMPLATE_EXTRA_ARGS=""
+    E2E_EXTRA_ARGS=""
   fi
 fi
 
